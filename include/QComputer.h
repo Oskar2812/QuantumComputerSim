@@ -46,6 +46,10 @@ class QComputer{
         /// @param actGate the gate to act
         void actAll(void (QComputer::*actGate)(int));
 
+        /// @brief Acts an arbitary gate on the state
+        /// @param  gate the gate to act
+        void actGate(Eigen::MatrixXcd gate);
+
         /// @brief Measures the state 
         /// @return The index of the measured state with probability |state[index]|^2
         int measure();

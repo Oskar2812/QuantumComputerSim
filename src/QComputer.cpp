@@ -106,7 +106,7 @@ int QComputer::measure(){
 void QComputer::showMeasure(){
     int result = measure();
 
-     std::bitset<32> binary(result);
+    std::bitset<32> binary(result);
 
     std::string str = binary.to_string();
     str = str.substr(str.size() - nQubits, nQubits);
@@ -153,4 +153,12 @@ void QComputer::actAll(void (QComputer::*actGate)(int)){
     for(int ii = 0; ii < nQubits; ii++){
         (this->*actGate)(ii);
     }
+}
+
+void QComputer::actGate(MatrixXcd gate){
+    if(gate.rows() != (1 << nQubits) || gate.cols() != (1 << nQubits)){
+        throw std::invalid_argument("Error: Gate must have dimenseions: " + (1 << nQubits));
+    }
+
+    state = gate * state;
 }
