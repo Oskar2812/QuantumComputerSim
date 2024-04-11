@@ -148,3 +148,9 @@ void QComputer::actH(int nn){
     H = (1/sqrt(2)) * H;
     act(H, nn);   
 }
+
+void QComputer::actAll(void (QComputer::*actGate)(int)){
+    for(int ii = 0; ii < nQubits; ii++){
+        (this->*actGate)(ii);
+    }
+}

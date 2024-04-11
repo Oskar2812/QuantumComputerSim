@@ -42,6 +42,10 @@ class QComputer{
         /// @param qubit The qubit to act on
         void actH(int index);
 
+        /// @brief Acts a certain gate on all qubits
+        /// @param actGate the gate to act
+        void actAll(void (QComputer::*actGate)(int));
+
         /// @brief Measures the state 
         /// @return The index of the measured state with probability |state[index]|^2
         int measure();
