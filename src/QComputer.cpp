@@ -162,3 +162,7 @@ void QComputer::actGate(MatrixXcd gate){
 
     state = gate * state;
 }
+
+VectorXcd QComputer::getState(){
+    return state;
+}

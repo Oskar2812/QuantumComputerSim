@@ -23,6 +23,10 @@ class QComputer{
         /// @return nQubits
         int getNQubits() const; 
 
+        /// @brief Gets the state
+        /// @return a 2^nQubits d vector
+        Eigen::VectorXcd getState();
+
         /// @brief Prints the current state vector
         void showState();
 
