@@ -7,7 +7,7 @@
 
 using namespace Eigen;
 
-void quantumSearch(QComputer& qc, int target, int iterations){
+void quantumSearch(QComputer& qc, int target){
 
     std::bitset<32> binary(target);
 
@@ -29,9 +29,6 @@ void quantumSearch(QComputer& qc, int target, int iterations){
     MatrixXcd psi = qc.getState() * qc.getState().transpose();
     MatrixXcd U2 = MatrixXcd::Identity(dim, dim) - 2 * psi;
 
-    for(int ii = 0; ii < iterations; ii++){
-        qc.actGate(U1);
-        qc.actGate(U2);
-    }
-
+    qc.actGate(U1);
+    qc.actGate(U2);
 }

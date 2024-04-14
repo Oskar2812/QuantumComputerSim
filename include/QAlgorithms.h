@@ -7,6 +7,6 @@
 
 /// @brief Implements the quantum search alogrithm
 /// @param qc The qunatum computer to act on.
-void quantumSearch(QComputer& qc, int target, int iterations);
+void quantumSearch(QComputer& qc, int target);
 
 #endif
