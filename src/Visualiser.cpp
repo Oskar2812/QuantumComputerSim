@@ -51,7 +51,7 @@ std::vector<Text> updateOutput(Eigen::VectorXcd outState, const Font& font, cons
 
 Visualiser::Visualiser(QComputer& qc, QAlgo alg): qComp(qc), algo(alg) {}
 
-void Visualiser::show(){
+void Visualiser::show(int input){
 
     const int sizeX = 1200;
     const int sizeY = 900;
@@ -66,7 +66,7 @@ void Visualiser::show(){
 
     Eigen::VectorXcd state = qComp.getState();
 
-    algo(qComp, 7);
+    algo(qComp, input);
     Eigen::VectorXcd outState = qComp.getState();
 
     std::vector<Text> inputTexts, outputTexts;
@@ -124,7 +124,7 @@ void Visualiser::show(){
         while(window.pollEvent(event)){
             if(event.type == Event::Closed) window.close();
             if(event.type == Event::MouseButtonPressed){
-                algo(qComp, 7);
+                algo(qComp, input);
                 outState = qComp.getState();
                 outputTexts = updateOutput(outState, font, startY, stepY, charSize);
             }
@@ -144,6 +144,7 @@ void Visualiser::show(){
             window.draw(text);
         }
 
+        applyButton.draw(window);
         window.display();
     }
 }

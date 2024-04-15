@@ -15,7 +15,7 @@ class Visualiser{
         Visualiser(QComputer& qc, QAlgo alg);
 
         /// @brief Displayes the interactive representation of the quantum computer
-        void show();
+        void show(int input);
 
     private:
         QComputer& qComp;
