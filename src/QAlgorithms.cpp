@@ -21,7 +21,7 @@ void quantumSearch(QComputer& qc, int target){
     //Solving the problem
     int dim = (1 << qc.getNQubits());
 
-    qc.actAll(&QComputer::actH);
+    qc.actAll(&QComputer::actH, "INIT");
 
     MatrixXcd eps = tarVec * tarVec.transpose();
     MatrixXcd U1 = MatrixXcd::Identity(dim, dim) - 2* eps;
@@ -29,6 +29,6 @@ void quantumSearch(QComputer& qc, int target){
     MatrixXcd psi = qc.getState() * qc.getState().transpose();
     MatrixXcd U2 = MatrixXcd::Identity(dim, dim) - 2 * psi;
 
-    qc.actGate(U1);
-    qc.actGate(U2);
+    qc.actGate(U1, "U1");
+    qc.actGate(U2, "U2");
 }

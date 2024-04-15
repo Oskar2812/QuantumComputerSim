@@ -6,6 +6,7 @@ Author: Oskar Grewe
 */
 
 #include <Eigen/Dense>
+#include <string>
 
 #ifndef QCOMPUTER
 #define QCOMPUTER
@@ -32,27 +33,27 @@ class QComputer{
 
         /// @brief Acts a X gate on the idex'th qubit 
         /// @param qubit The qubit to act on
-        void actX(int index);
+        void actX(int index, std::string tag = "STANDARD");
 
         /// @brief Acts a Y gate on the idex'th qubit 
         /// @param qubit The qubit to act on
-        void actY(int index);
+        void actY(int index, std::string tag = "STANDARD");
 
         /// @brief Acts a Z gate on the idex'th qubit 
         /// @param qubit The qubit to act on
-        void actZ(int index);
+        void actZ(int index, std::string tag = "STANDARD");
 
         /// @brief Acts a Hadamard gate on the idex'th qubit 
         /// @param qubit The qubit to act on
-        void actH(int index);
+        void actH(int index, std::string tag = "STANDARD");
 
         /// @brief Acts a certain gate on all qubits
         /// @param actGate the gate to act
-        void actAll(void (QComputer::*actGate)(int));
+        void actAll(void (QComputer::*actGate)(int, std::string), std::string tag = "STANDARD");
 
         /// @brief Acts an arbitary gate on the state
         /// @param  gate the gate to act
-        void actGate(Eigen::MatrixXcd gate);
+        void actGate(Eigen::MatrixXcd gate, std::string label, std::string tag = "STANDARD");
 
         /// @brief Measures the state 
         /// @return The index of the measured state with probability |state[index]|^2
@@ -64,6 +65,10 @@ class QComputer{
     private:
         /// @brief Number of qubits in state, TODO: Add a register class and stick it inside there
         int nQubits;
+
+        /// @brief Flags whether or not the state is initialised
+        bool isInit = false;
+
         /// @brief Current sate of the computer
         Eigen::VectorXcd state;
 
@@ -73,12 +78,12 @@ class QComputer{
 
         /// @brief The method actually building the matrix that cts on the final state
         /// @param gate The matrix to be used
-        void act(Eigen::Matrix2cd gate, int index);
+        void act(Eigen::Matrix2cd gate, int index, std::string label, std::string tag = "STANDARD");
 
         /// @brief Normalises the state vector
         void normaliseState();
 
-
+        void initialise();
 };
 
 #endif

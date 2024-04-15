@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <bitset>
-#include <string>
 #include <random>
 #include <complex>
 #include <cmath>
@@ -55,7 +54,13 @@ void QComputer::showState(){
         std::cout << state[ii] << "      |" << str << ">\n"; 
     }
 }
-void QComputer::act(Matrix2cd gate, int index){
+void QComputer::act(Matrix2cd gate, int index, std::string label, std::string tag){
+
+    if(tag == "INIT" && isInit == false){
+        initialise();
+    } else if(tag == "INIT" && isInit == true){
+        return;
+    }
     if(index < 0 || nQubits <= index){
         throw std::invalid_argument("Invalid qubit index: Index must be between 0 and " + std::to_string(nQubits - 1));
     }
@@ -114,55 +119,66 @@ void QComputer::showMeasure(){
     std::cout << "Measurement result: " << result << "  <=>  |" << str << ">" << std::endl;
 }
 
+VectorXcd QComputer::getState(){
+    return state;
+}
+
+void QComputer::initialise(){
+    isInit = true;
+}
+
 /*GATES*/
 
-void QComputer::actX(int nn){
+void QComputer::actX(int nn, std::string tag){
     Matrix2cd X;
     X << 0, 1,
          1, 0;      
 
-    act(X, nn);   
+    act(X, nn, "X", tag);   
 }
 
-void QComputer::actY(int nn){
+void QComputer::actY(int nn, std::string tag){
     Matrix2cd Y;
     Y << std::complex<double>(0,0), std::complex<double>(0,-1), 
          std::complex<double>(0,1), std::complex<double>(0,0);      
 
-    act(Y, nn);   
+    act(Y, nn, "Y", tag);   
 }
 
-void QComputer::actZ(int nn){
+void QComputer::actZ(int nn, std::string tag){
     Matrix2cd Z;
     Z << 1, 0,
          0, -1;      
 
-    act(Z, nn);   
+    act(Z, nn, "Z", tag);   
 }
 
-void QComputer::actH(int nn){
+void QComputer::actH(int nn, std::string tag){
     Matrix2cd H;
     H << 1, 1,
          1, -1;      
 
     H = (1/sqrt(2)) * H;
-    act(H, nn);   
+    act(H, nn, "H", tag);   
 }
 
-void QComputer::actAll(void (QComputer::*actGate)(int)){
+void QComputer::actAll(void (QComputer::*actGate)(int, std::string), std::string tag){
+    if(tag == "INIT" && isInit == true){
+        return;
+    }else if(tag == "INIT" && isInit == false){
+        initialise();
+        std::cout << "Here" << std::endl;
+    }
+
     for(int ii = 0; ii < nQubits; ii++){
-        (this->*actGate)(ii);
+        (this->*actGate)(ii, "STANDARD");
     }
 }
 
-void QComputer::actGate(MatrixXcd gate){
+void QComputer::actGate(MatrixXcd gate, std::string label, std::string tag){
     if(gate.rows() != (1 << nQubits) || gate.cols() != (1 << nQubits)){
-        throw std::invalid_argument("Error: Gate must have dimenseions: " + (1 << nQubits));
+        throw std::invalid_argument("Error: Gate must have dimensions: " + (1 << nQubits));
     }
 
     state = gate * state;
-}
-
-VectorXcd QComputer::getState(){
-    return state;
 }
