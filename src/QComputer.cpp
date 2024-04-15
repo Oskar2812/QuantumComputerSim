@@ -167,7 +167,6 @@ void QComputer::actAll(void (QComputer::*actGate)(int, std::string), std::string
         return;
     }else if(tag == "INIT" && isInit == false){
         initialise();
-        std::cout << "Here" << std::endl;
     }
 
     for(int ii = 0; ii < nQubits; ii++){

@@ -1,6 +1,5 @@
 #include "../include/Visualiser.h"
 
-#include <SFML/Graphics.hpp>
 #include <Eigen/Dense>
 
 #include <iostream>
@@ -11,6 +10,44 @@
 #include <string>
 
 using namespace sf;
+
+
+std::vector<Text> updateOutput(Eigen::VectorXcd outState, const Font& font, const int startY, const double stepY, const int charSize){
+
+    std::vector<Text> outputTexts;
+
+        std::ostringstream stream;
+
+        for(int ii = 0; ii < outState.size(); ii++){
+        stream.str(""); // Clear the stream
+        stream.clear(); // Clear any flags
+
+        // Apply fixed-point notation and set precision
+        stream << std::fixed << std::setprecision(2);
+
+        std::complex<double> num = outState[ii];
+
+        stream << num.real();
+        
+        if (num.imag() >= 0)
+            stream << " + " << std::abs(num.imag()) << "i";
+        else
+            stream << " - " << std::abs(num.imag()) << "i";
+        
+        Text text;
+        text.setFont(font);
+        text.setString(stream.str());
+        text.setCharacterSize(charSize);
+        text.setFillColor(Color::Black);
+        text.setPosition(920, startY + ii * stepY);
+
+        outputTexts.push_back(text);
+
+    }
+
+    return outputTexts;
+
+    }
 
 Visualiser::Visualiser(QComputer& qc, QAlgo alg): qComp(qc), algo(alg) {}
 
@@ -77,40 +114,23 @@ void Visualiser::show(){
         bars.push_back(bar);
     }
 
-    for(int ii = 0; ii < outState.size(); ii++){
-        stream.str(""); // Clear the stream
-        stream.clear(); // Clear any flags
-
-        // Apply fixed-point notation and set precision
-        stream << std::fixed << std::setprecision(2);
-
-        std::complex<double> num = outState[ii];
-
-        stream << num.real();
-        
-        if (num.imag() >= 0)
-            stream << " + " << std::abs(num.imag()) << "i";
-        else
-            stream << " - " << std::abs(num.imag()) << "i";
-        
-        Text text;
-        text.setFont(font);
-        text.setString(stream.str());
-        text.setCharacterSize(charSize);
-        text.setFillColor(Color::Black);
-        text.setPosition(920, startY + ii * stepY);
-
-        outputTexts.push_back(text);
-
-    }
+    outputTexts = updateOutput(outState, font, startY, stepY, charSize);
+ 
+    Button applyButton(920, 10, 100, 40, font, "Apply", Color(245,245,220), Color::Black);
 
     while(window.isOpen()){
         Event event;
 
         while(window.pollEvent(event)){
             if(event.type == Event::Closed) window.close();
+            if(event.type == Event::MouseButtonPressed){
+                algo(qComp, 7);
+                outState = qComp.getState();
+                outputTexts = updateOutput(outState, font, startY, stepY, charSize);
+            }
         }
 
+        applyButton.update(window);
         window.clear(Color(245,245,220));
 
         for(Text& text : inputTexts){
@@ -118,11 +138,43 @@ void Visualiser::show(){
         }
         for(RectangleShape& bar : bars){
             window.draw(bar);
-        }
+        }     
         for(Text& text : outputTexts){
+            //segfault here
             window.draw(text);
         }
-
+        applyButton.draw(window);
         window.display();
     }
+}
+
+
+Button::Button(float x, float y, float width, float height, const sf::Font& font, const std::string& text,
+               const sf::Color& bgColor, const sf::Color& textColor)
+    : backgroundColor(bgColor), hoverColor(sf::Color::Green), hovered(false) {
+    shape.setPosition(sf::Vector2f(x, y));
+    shape.setSize(sf::Vector2f(width, height));
+    shape.setFillColor(backgroundColor);
+
+    labelText.setFont(font);
+    labelText.setString(text);
+    labelText.setCharacterSize(24);
+    labelText.setFillColor(textColor);
+    labelText.setPosition(x + (width - labelText.getLocalBounds().width) / 2,
+                          y + (height - labelText.getLocalBounds().height) / 2 - 10);
+}
+
+void Button::draw(sf::RenderWindow& window) {
+    window.draw(shape);
+    window.draw(labelText);
+}
+
+bool Button::isMouseOver(sf::RenderWindow& window) {
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    return shape.getGlobalBounds().contains(mousePos.x, mousePos.y);
+}
+
+void Button::update(sf::RenderWindow& window) {
+    hovered = isMouseOver(window);
+    shape.setFillColor(hovered ? hoverColor : backgroundColor);
 }
