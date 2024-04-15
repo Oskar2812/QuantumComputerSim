@@ -143,7 +143,7 @@ void Visualiser::show(){
             //segfault here
             window.draw(text);
         }
-        applyButton.draw(window);
+
         window.display();
     }
 }
@@ -155,6 +155,9 @@ Button::Button(float x, float y, float width, float height, const sf::Font& font
     shape.setPosition(sf::Vector2f(x, y));
     shape.setSize(sf::Vector2f(width, height));
     shape.setFillColor(backgroundColor);
+
+    shape.setOutlineThickness(2.f);  // Set the thickness of the outline
+    shape.setOutlineColor(sf::Color::Black);  // Set the color of the outline to black
 
     labelText.setFont(font);
     labelText.setString(text);
